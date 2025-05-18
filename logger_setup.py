@@ -41,7 +41,12 @@ def log_error(action: str, obj: str, message: str, status: str = "failure", user
     extra = {"action": action, "object": obj, "status": status, "user": user}
     logger.error(message, extra=extra)
 
+def log_warning(action: str, obj: str, message: str, status: str = "warning", user: str = "local_user"):
+    extra = {"action": action, "object": obj, "status": status, "user": user}
+    logger.warning(message, extra=extra)
+
 # Пример логов
 if __name__ == "__main__":
     log_info("connect", "ldap", "Successfully connected to domain controller", status="success")
-    log_error("addtogroup", "John Doe", "Group not found", status="failure") 
+    log_error("addtogroup", "John Doe", "Group not found", status="failure")
+    log_warning("config_load", "config.json", "Configuration file not found.") 

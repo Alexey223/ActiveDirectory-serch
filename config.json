@@ -1,7 +1,8 @@
 {
   "ad_settings": {
-    "base_dn": "DC=example,DC=com",
-    "target_group_dn": "CN=KRR-LG-InetUsers,OU=Groups,DC=example,DC=com"
+    "domain_controllers": ["dc1.yourdomain.com", "dc2.yourdomain.com", "dc3.yourdomain.com"],
+    "base_dn": "DC=yourdomain,DC=com",
+    "target_group_dn": "CN=YourTargetGroup,OU=Groups,DC=yourdomain,DC=com"
   },
   "logging": {
     "file": "ad_utility.log"

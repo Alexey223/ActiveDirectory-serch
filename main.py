@@ -125,7 +125,7 @@ class MainWindow(QMainWindow):
             sys.exit(1)
             
         # Initialize LDAP client
-        self.ldap_client = LDAPClient()
+        self.ldap_client = LDAPClient(self.config)
         
         # Setup UI
         self._setup_ui()
@@ -253,7 +253,7 @@ class MainWindow(QMainWindow):
         self.domain_label = QLabel('Domain Controller:')
         domain_layout.addWidget(self.domain_label)
         
-        domain_controllers = self.ldap_client.config.get('ad_settings', {}).get('domain_controllers', [])
+        domain_controllers = self.ldap_client.get_domain_controllers()
         self.domain_combo = QComboBox()
         self.domain_combo.addItems(domain_controllers)
         self.domain_combo.currentIndexChanged.connect(self.on_domain_changed)
@@ -332,7 +332,8 @@ class MainWindow(QMainWindow):
         results_layout.addWidget(self.results_list)
         
         # Add to group button
-        self.add_group_btn = QPushButton('Add to KRR-LG-InetUsers')
+        target_group_dn = self.config.get('ad_settings', {}).get('target_group_dn', '')
+        self.add_group_btn = QPushButton(f'Add to {target_group_dn}')
         try:
             add_icon = load_svg_icon('icons/add_icon.svg', 
                                    color=COLORS['background'], 
@@ -383,7 +384,7 @@ class MainWindow(QMainWindow):
     
     def on_connect(self):
         """Handle connect/disconnect button click."""
-        if self.ldap_client.connection and self.ldap_client.connection.bound:
+        if self.ldap_client.is_connected():
             success, message = self.ldap_client.disconnect()
             if success:
                 self._update_status(StatusMessage.DISCONNECTED)
@@ -402,9 +403,9 @@ class MainWindow(QMainWindow):
                                   "Please enter domain controller, username, and password.")
                 return
             
-            success, message = self.ldap_client.connect(domain)
+            success, message = self.ldap_client.connect(domain, username, password)
             if success:
-                self._update_status(StatusMessage.CONNECTED.format(domain, self.ldap_client.ldap_user))
+                self._update_status(StatusMessage.CONNECTED.format(domain, username))
                 self._update_ui_state(True)
                 self.connect_btn.setText('Disconnect')
             else:
@@ -450,7 +451,13 @@ class MainWindow(QMainWindow):
         selected_user_dn = selected_items[0].data(Qt.UserRole)
         selected_user_display = selected_items[0].text()
         
-        success, message = self.ldap_client.add_user_to_group(selected_user_dn, 'KRR-LG-InetUsers')
+        target_group = self.config.get('ad_settings', {}).get('target_group_dn', '')
+        if not target_group:
+             self._update_status('Status: Target group not configured', True)
+             QMessageBox.critical(self, 'Configuration Error', 'Target group DN is not configured in config.json.')
+             return
+        
+        success, message = self.ldap_client.add_user_to_group(selected_user_dn, target_group, user=getpass.getuser())
         if success:
             self._update_status(StatusMessage.ADD_SUCCESS.format(selected_user_display))
             QMessageBox.information(self, 'Success', 
@@ -469,75 +476,86 @@ class MainWindow(QMainWindow):
 
 import getpass
 
-current_user = getpass.getuser()
+current_user_cli = getpass.getuser()
 
 def cli_connect(args):
     try:
-        ldap_client = LDAPClient()
-        if ldap_client.connect(target=args.target):
-            log_info("connect", args.target, "Connection established", user=current_user)
+        config = load_config(DEFAULT_CONFIG_PATH)
+        if not config:
+            sys.exit(1)
+
+        ldap_client = LDAPClient(config)
+
+        target = args.target
+
+        success, message = ldap_client.connect(target)
+        if success:
+            print(f"Connection to {target} established successfully.")
         else:
-            # Log error if connect returns False
-            log_error("connect", args.target, "Connection failed", user=current_user)
+            print(f"Connection failed: {message}")
+
     except Exception as e:
-        # Log exception during connect
-        log_error("connect", args.target, f"Exception during connection: {str(e)}", user=current_user)
-        # Re-raise to allow the CLI to handle/exit if necessary, or remove raise if just logging is enough
-        # raise # Decided to remove re-raise for now to keep CLI simple
+        log_error("connect", args.target, f"Exception during CLI connection: {str(e)}", user=current_user_cli)
+        print(f"An unexpected error occurred: {str(e)}")
+        sys.exit(1)
 
 
 def cli_addtogroup(args):
-    ldap_client = LDAPClient()
-
-    # In a real app, you'd likely resolve the username to a DN here if CLI uses sAMAccountName
-    # For this prototype, we'll assume args.user is the DN or something add_user_to_group can handle
-    user_identifier = args.user
-    target_group = args.group
-
-    # No explicit is_connected check needed before calling add_user_to_group
-    # as LDAPClient methods should handle not being connected internally
     try:
-        # Pass current_user to add_user_to_group for logging sensitive actions
-        success = ldap_client.add_user_to_group(user_identifier, target_group, user=current_user)
+        config = load_config(DEFAULT_CONFIG_PATH)
+        if not config:
+            sys.exit(1)
+
+        ldap_client = LDAPClient(config)
+
+        user_identifier = args.user
+        target_group = args.group
+
+        success, message = ldap_client.add_user_to_group(user_identifier, target_group, user=current_user_cli)
+
         if success:
-            log_info("addtogroup", target_group, f"Successfully added user: {user_identifier}", user=current_user)
-            print(f"Successfully added user {user_identifier} to group {target_group}")
+            print(f"Successfully added user {user_identifier} to group {target_group}.")
         else:
-            # LDAPClient.add_user_to_group logs the failure internally, no need to re-log here unless different message format is needed
-            # log_error("addtogroup", target_group, f"Failed to add user: {user_identifier}", user=current_user)
-            pass # LDAPClient already logged the failure details
+            print(f"Failed to add user {user_identifier} to group {target_group}: {message}")
+            if message != "Operation cancelled by user":
+                sys.exit(1)
+
     except Exception as e:
-        # Log exception during addtogroup operation
-        log_error("addtogroup", target_group, f"Exception during addtogroup: {str(e)}", user=current_user)
-        # raise # Decided to remove re-raise for now
+        log_error("addtogroup", args.group, f"Exception during CLI addtogroup: {str(e)}", user=current_user_cli)
+        print(f"An unexpected error occurred: {str(e)}")
+        sys.exit(1)
 
 
 def cli_status(args):
-    ldap_client = LDAPClient()
-    status = ldap_client.get_status()
-    # get_status already logs internally, so just print to stdout
-    print(f"Current connection status: {status}")
+    try:
+        config = load_config(DEFAULT_CONFIG_PATH)
+        if not config:
+             sys.exit(1)
+
+        ldap_client = LDAPClient(config)
+        status = ldap_client.get_status()
+        print(f"Current connection status: {status}")
+
+    except Exception as e:
+        log_error("status", "connection", f"Exception during CLI status check: {str(e)}", user=current_user_cli)
+        print(f"An unexpected error occurred: {str(e)}")
+        sys.exit(1)
 
 
 def build_parser():
-    parser = argparse.ArgumentParser(description="LDAP Group Administration Tool")
-    
-    # Add subparsers for CLI commands
+    parser = argparse.ArgumentParser(description="Active Directory Utility (GUI or CLI)")
+
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
-    # connect parser
     connect_parser = subparsers.add_parser("connect", help="Establish an LDAP connection")
     connect_parser.add_argument("--target", required=True, help="Domain controller hostname or IP")
     connect_parser.set_defaults(func=cli_connect)
 
-    # addtogroup parser
     add_parser = subparsers.add_parser("addtogroup", help="Add user to group")
-    # Assuming --user is the identifier used by add_user_to_group (e.g., DN or sAMAccountName)
     add_parser.add_argument("--user", required=True, help="User identifier (e.g., DN, sAMAccountName) to add")
     add_parser.add_argument("--group", required=True, help="Target group name or DN")
     add_parser.set_defaults(func=cli_addtogroup)
 
-    # status parser
     status_parser = subparsers.add_parser("status", help="Show connection status")
     status_parser.set_defaults(func=cli_status)
 
@@ -545,31 +563,18 @@ def build_parser():
 
 
 if __name__ == "__main__":
+    from dotenv import load_dotenv
+    load_dotenv()
+
     parser = build_parser()
     args = parser.parse_args()
 
-    # Check if a command was provided (i.e., func was set by set_defaults)
-    if hasattr(args, 'func'):
-        args.func(args)
-    else:
-        # If no command is given, print help message
-        parser.print_help()
-
-# -----------------------------------------------------------------------------
-# Entry Point
-# -----------------------------------------------------------------------------
-
-if __name__ == '__main__':
-    # Check if arguments are provided for CLI mode
-    if len(sys.argv) > 1:
-        parser = build_parser()
-        args = parser.parse_args()
+    if hasattr(args, 'command') and args.command is not None:
         if hasattr(args, 'func'):
             args.func(args)
         else:
             parser.print_help()
     else:
-        # No arguments provided, run GUI mode
         log_info("app_start", "gui", "App started (GUI mode).")
         app = QApplication(sys.argv)
         window = MainWindow()
