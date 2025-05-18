@@ -1,0 +1,7 @@
+{
+  "protected_groups": [
+    "Domain Admins",
+    "Administrator Access",
+    "Infrastructure Admins"
+  ]
+} 

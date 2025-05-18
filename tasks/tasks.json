@@ -10,7 +10,44 @@
       "id": "2",
       "title": "Create PRD",
       "description": "Develop the Product Requirements Document outlining project scope and features.",
-      "status": "pending"
+      "status": "pending",
+      "subtasks": [
+        {
+          "id": "2.1",
+          "title": "Исследовать лучшие шаблоны PRD (Atlassian, GitLab, Linear и т.д.)",
+          "status": "pending"
+        },
+        {
+          "id": "2.2",
+          "title": "Настроить структуру документа PRD",
+          "status": "pending"
+        },
+        {
+          "id": "2.3",
+          "title": "Сформулировать цели и контекст продукта",
+          "status": "pending"
+        },
+        {
+          "id": "2.4",
+          "title": "Описать ключевые функции (MVP)",
+          "status": "pending"
+        },
+        {
+          "id": "2.5",
+          "title": "Добавить user stories / user flow",
+          "status": "pending"
+        },
+        {
+          "id": "2.6",
+          "title": "Выделить риски, ограничения, метрики",
+          "status": "pending"
+        },
+        {
+          "id": "2.7",
+          "title": "Согласовать финальный документ",
+          "status": "pending"
+        }
+      ]
     },
     {
       "id": "3",
