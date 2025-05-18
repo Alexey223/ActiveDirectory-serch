@@ -1,0 +1,67 @@
+{
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Initialize Project",
+      "description": "Setup project structure and initialize repository.",
+      "status": "done"
+    },
+    {
+      "id": "2",
+      "title": "Create PRD",
+      "description": "Develop the Product Requirements Document outlining project scope and features.",
+      "status": "pending"
+    },
+    {
+      "id": "3",
+      "title": "Implement Basic GUI (Connect, Search, Add to Group)",
+      "description": "Develop the initial graphical user interface for core Active Directory operations.",
+      "status": "pending"
+    },
+    {
+      "id": "4",
+      "title": "Configure Connection Parameters",
+      "description": "Implement functionality to configure Active Directory connection settings.",
+      "status": "pending"
+    },
+    {
+      "id": "5",
+      "title": "Improve Error Handling",
+      "description": "Enhance error handling for more robust and informative feedback during AD operations.",
+      "status": "pending"
+    },
+    {
+      "id": "6",
+      "title": "Implement RBAC",
+      "description": "Implement Role-Based Access Control for managing user permissions within the application.",
+      "status": "pending"
+    },
+    {
+      "id": "7",
+      "title": "Prepare for Local Deployment",
+      "description": "Configure the application for easy deployment on local Windows machines.",
+      "status": "pending",
+      "dependencies": ["5", "8"]
+    },
+    {
+      "id": "8",
+      "title": "Develop REST API",
+      "description": "Develop a RESTful API for programmatically interacting with Active Directory through the application.",
+      "status": "pending"
+    },
+    {
+      "id": "9",
+      "title": "Implement 2FA",
+      "description": "Add Two-Factor Authentication to enhance application security.",
+      "status": "pending",
+      "dependencies": ["6"]
+    },
+    {
+      "id": "10",
+      "title": "Add Mobile Support",
+      "description": "Extend application functionality to support mobile access.",
+      "status": "pending",
+      "dependencies": ["3", "8"]
+    }
+  ]
+} 
