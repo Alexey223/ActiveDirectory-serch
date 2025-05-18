@@ -1,0 +1,9 @@
+{
+  "ad_settings": {
+    "base_dn": "DC=example,DC=com",
+    "target_group_dn": "CN=KRR-LG-InetUsers,OU=Groups,DC=example,DC=com"
+  },
+  "logging": {
+    "file": "ad_utility.log"
+  }
+} 

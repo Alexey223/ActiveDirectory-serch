@@ -1,40 +1,32 @@
-# Product Requirements Document (PRD)
+Product Requirements Document (PRD)
 
-## Назва продукту
+Назва продукту:
 Графічна утиліта для роботи з Active Directory (AD) у корпоративному середовищі
 
----
-
-## 1. Product Goals (Цілі продукту)
+1. Product Goals (Цілі продукту):
 - Спрощення та автоматизація рутинних задач адміністрування AD для MSP та внутрішніх IT-команд
 - Забезпечення безпечного, прозорого та делегованого доступу до основних функцій AD
 - Підвищення ефективності обслуговування користувачів та груп
 
----
-
-## 2. Problem Statement (Постановка проблеми)
+2. Problem Statement (Постановка проблеми):
 - Складність стандартних інструментів (RSAT, PowerShell) для нетехнічних користувачів
 - Відсутність єдиного сучасного web/desktop-інтерфейсу для швидких операцій з AD
 - Необхідність делегування та аудиту дій для MSP
 
----
-
-## 3. Features (Ключовий функціонал)
+3. Features (Ключовий функціонал):
 - Вибір домен-контролера
 - Введення облікових даних для підключення
 - Пошук користувача
-- Додавання користувача до заданої AD-групи (початково — KRR-LG-InetUsers)
+- Додавання користувача до AD-групи (KRR-LG-InetUsers)
 - Делегування прав (RBAC)
 - Аудит дій (журналювання)
-- Локальний запуск на Windows (без серверної частини)
+- Локальний запуск на Windows
 - Реалізація на Python
 - REST API для інтеграцій
-- Підтримка 2FA (наприклад, Cisco DUO)
-- Мобільна підтримка (для web-based)
+- Підтримка 2FA
+- Мобільна підтримка (web-based)
 
----
-
-## 4. Release Criteria (Критерії релізу)
+4. Release Criteria (Критерії релізу):
 - Функціональність: всі основні сценарії працюють згідно вимог
 - Локальний запуск на Windows
 - Реалізація на Python
@@ -43,60 +35,69 @@
 - Інтеграції: REST API, webhooks
 - Аудит: повний журнал дій
 
----
-
-## 5. Timeline (Таймлайн)
+5. Timeline (Таймлайн):
 - Дослідження та прототипування (Python, локальний запуск): 2 тижні
 - MVP-реалізація: 4 тижні
 - Тестування та аудит: 2 тижні
 - Пілотний запуск: 1 тиждень
 - Впровадження та підтримка: постійно
 
----
-
-## 6. Етапи обслуговування (MSP-specific)
+6. Етапи обслуговування (MSP-specific):
 - Onboarding: налаштування доступу, делегування, навчання
 - Support: регулярна підтримка, оновлення, аудит
 - Offboarding: безпечне видалення доступу, архівування журналів
 
----
-
-## 7. SLA (Service Level Agreement)
+7. SLA (Service Level Agreement):
 - Час реакції на інциденти: до 1 години
 - Час вирішення критичних проблем: до 4 годин
 - Доступність сервісу: 99.9%
 - Регулярні оновлення безпеки
 
----
-
-## 8. Ризики та їх мінімізація
+8. Ризики та їх мінімізація:
 - Некоректне делегування прав —> RBAC, аудит
 - Витік облікових даних —> 2FA, шифрування
 - Збої інтеграцій —> fallback-механізми, журналювання
 
----
-
-## 9. Безпека
+9. Безпека:
 - Principle of Least Privilege
 - Сервісні акаунти з мінімальними правами
 - LDAPS/VPN для підключень
 - Аудит усіх дій
 - Регулярне оновлення компонентів
 
----
-
-## 10. Інтеграції
+10. Інтеграції:
 - REST API для зовнішніх систем
 - Webhooks для сповіщень
 - Підтримка стандартних протоколів (LDAP, Kerberos)
 
----
-
-## 11. Додатки
+11. Додатки:
 - Аналіз best practices (BLAZAM, ADMC)
 - Посилання на досліджені ресурси
 - Сценарії використання (user stories)
 
----
+Примітка: Структура базується на Atlassian PRD з додаванням MSP-елементів. Деталізація кожного розділу — після погодження чорновика.
 
-> **Примітка:** Структура базується на Atlassian PRD з додаванням MSP-елементів. Деталізація кожного розділу — після погодження чорновика. 
+## Product Requirements Document (PRD) for Active Directory Utility
+
+### Core Functionality:
+
+*   Select a domain controller
+*   Enter credentials
+*   Search for a user in Active Directory
+*   Add a selected user to a specific AD group (initially KRR-LG-InetUsers)
+
+### UI/UX Design Goals:
+
+Based on modern design trends and analysis, we aim for the following:
+
+*   **Clean and Minimalist Interface:** Prioritize essential elements and content.
+*   **Improved Typography:** Use modern fonts for better readability and hierarchy.
+*   **Effective Spacing:** Implement consistent margins and padding for clarity and visual appeal.
+*   **Strategic Use of Color:** Use accent colors for key elements (status, actions).
+*   **Modern Aesthetics:** Incorporate rounded corners and subtle effects where appropriate.
+*   **Clear Visual Hierarchy:** Ensure users can easily understand the structure and relationships between elements.
+*   **Distinct Element States:** Clearly show interactive states (hover, pressed, disabled).
+*   **Refined List View:** Enhance the appearance and readability of the search results list.
+
+---
+**Note:** This PRD will evolve as we continue development and gather more insights. 

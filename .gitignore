@@ -1,0 +1,62 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dev-debug.log
+
+# Dependency directories
+node_modules/
+
+# Environment variables
+.env
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS specific
+.DS_Store
+
+# Task files
+tasks.json
+tasks/
+
+# Ignore virtual environments
+.venv/
+env/
+venv/
+
+# Ignore compiled Python files
+__pycache__/
+*.pyc
+
+# Ignore editor and OS specific files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Ignore build and distribution files
+dist/
+build/
+*.egg-info/
+
+# Ignore log file
+ad_utility.log
+
+# Ignore configuration file (if it contains sensitive info, otherwise keep it)
+# config.json # Uncomment if config.json should not be in git
+
+# Ignore Task Master generated files that can be regenerated
+tasks/*.json
+scripts/task-complexity-report.json
+
+# Ignore custom down arrow icon if it's temporary or specific to local setup
+# icons/down_arrow_A0A0A0.png # Uncomment if this specific file should be ignored 
